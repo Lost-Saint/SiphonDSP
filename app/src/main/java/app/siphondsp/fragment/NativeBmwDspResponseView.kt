@@ -8,11 +8,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.R as MaterialR
-import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.log10
 import kotlin.math.pow
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
@@ -41,22 +38,18 @@ class NativeBmwDspResponseView @JvmOverloads constructor(
         strokeWidth = 3f * resources.displayMetrics.density
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
         textSize = 11f * resources.displayMetrics.scaledDensity
     }
 
     private var values = NativeBmwDspBottomSheet.DEFAULTS.copyOf()
 
     init {
-        val outline = resolveColor(MaterialR.attr.colorOutline)
-        val primary = resolveColor(MaterialR.attr.colorPrimary)
-        val secondary = resolveColor(MaterialR.attr.colorSecondary)
-        val tertiary = resolveColor(MaterialR.attr.colorTertiary)
-        val onSurface = resolveColor(MaterialR.attr.colorOnSurface)
-        gridPaint.color = outline
-        lowPaint.color = primary
-        midPaint.color = secondary
-        sumPaint.color = tertiary
-        labelPaint.color = onSurface
+        gridPaint.color = resolveColor(MaterialR.attr.colorOutline)
+        lowPaint.color = resolveColor(MaterialR.attr.colorPrimary)
+        midPaint.color = resolveColor(MaterialR.attr.colorSecondary)
+        sumPaint.color = resolveColor(android.R.attr.colorAccent)
+        labelPaint.color = resolveColor(android.R.attr.textColorPrimary)
     }
 
     fun setValues(newValues: FloatArray) {
@@ -76,32 +69,28 @@ class NativeBmwDspResponseView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val left = paddingLeft + 42f * resources.displayMetrics.density
-        val right = width - paddingRight - 12f * resources.displayMetrics.density
-        val top = paddingTop + 12f * resources.displayMetrics.density
-        val bottom = height - paddingBottom - 28f * resources.displayMetrics.density
+        val density = resources.displayMetrics.density
+        val left = paddingLeft + 42f * density
+        val right = width - paddingRight - 12f * density
+        val top = paddingTop + 12f * density
+        val bottom = height - paddingBottom - 28f * density
         if (right <= left || bottom <= top) return
-
         drawGrid(canvas, left, right, top, bottom)
         drawResponse(canvas, left, right, top, bottom)
     }
 
     private fun drawGrid(canvas: Canvas, left: Float, right: Float, top: Float, bottom: Float) {
-        val dbMarks = floatArrayOf(12f, 6f, 0f, -6f, -12f, -18f, -24f)
-        dbMarks.forEach { db ->
+        val density = resources.displayMetrics.density
+        floatArrayOf(12f, 6f, 0f, -6f, -12f, -18f, -24f).forEach { db ->
             val y = dbToY(db, top, bottom)
             canvas.drawLine(left, y, right, y, gridPaint)
-            canvas.drawText("${db.toInt()} dB", 2f * resources.displayMetrics.density, y + 4f, labelPaint)
+            canvas.drawText("${db.toInt()} dB", 2f * density, y + 4f, labelPaint)
         }
-        val frequencies = floatArrayOf(20f, 50f, 100f, 200f, 500f, 1000f, 2000f, 5000f, 10000f, 20000f)
-        frequencies.forEach { frequency ->
+        floatArrayOf(20f, 50f, 100f, 200f, 500f, 1000f, 2000f, 5000f, 10000f, 20000f).forEach { frequency ->
             val x = frequencyToX(frequency, left, right)
             canvas.drawLine(x, top, x, bottom, gridPaint)
-            val label = when {
-                frequency >= 1000f -> "${(frequency / 1000f).toInt()}k"
-                else -> frequency.toInt().toString()
-            }
-            canvas.drawText(label, x - labelPaint.measureText(label) / 2f, bottom + 18f * resources.displayMetrics.density, labelPaint)
+            val label = if (frequency >= 1000f) "${(frequency / 1000f).toInt()}k" else frequency.toInt().toString()
+            canvas.drawText(label, x - labelPaint.measureText(label) / 2f, bottom + 18f * density, labelPaint)
         }
     }
 
@@ -112,30 +101,24 @@ class NativeBmwDspResponseView @JvmOverloads constructor(
         val points = 240
         for (i in 0 until points) {
             val fraction = i.toFloat() / (points - 1)
-            val frequency = 20f * (1000f.pow(fraction))
+            val frequency = 20f * 1000f.pow(fraction)
             val lowDb = lowResponseDb(frequency)
             val midDb = midResponseDb(frequency)
             val sumDb = combinedResponseDb(lowDb, midDb) + tiltDb(frequency)
             val x = left + fraction * (right - left)
-            val lowY = dbToY(lowDb, top, bottom)
-            val midY = dbToY(midDb, top, bottom)
-            val sumY = dbToY(sumDb, top, bottom)
             if (i == 0) {
-                lowPath.moveTo(x, lowY)
-                midPath.moveTo(x, midY)
-                sumPath.moveTo(x, sumY)
+                lowPath.moveTo(x, dbToY(lowDb, top, bottom))
+                midPath.moveTo(x, dbToY(midDb, top, bottom))
+                sumPath.moveTo(x, dbToY(sumDb, top, bottom))
             } else {
-                lowPath.lineTo(x, lowY)
-                midPath.lineTo(x, midY)
-                sumPath.lineTo(x, sumY)
+                lowPath.lineTo(x, dbToY(lowDb, top, bottom))
+                midPath.lineTo(x, dbToY(midDb, top, bottom))
+                sumPath.lineTo(x, dbToY(sumDb, top, bottom))
             }
         }
         canvas.drawPath(lowPath, lowPaint)
         canvas.drawPath(midPath, midPaint)
         canvas.drawPath(sumPath, sumPaint)
-        canvas.drawText("LOW", left + 8f, top + 16f, lowPaint)
-        canvas.drawText("MID", left + 58f * resources.displayMetrics.density, top + 16f, midPaint)
-        canvas.drawText("SUM", left + 108f * resources.displayMetrics.density, top + 16f, sumPaint)
     }
 
     private fun lowResponseDb(frequency: Float): Float {
@@ -149,8 +132,7 @@ class NativeBmwDspResponseView @JvmOverloads constructor(
     private fun midResponseDb(frequency: Float): Float {
         if (values[2] >= .5f) return values[8]
         val fc = values[18].coerceAtLeast(1f)
-        val order = 4
-        val magnitude = 1.0 / sqrt(1.0 + (fc / frequency).toDouble().pow(2.0 * order))
+        val magnitude = 1.0 / sqrt(1.0 + (fc / frequency).toDouble().pow(8.0))
         return amplitudeToDb(magnitude) + values[8]
     }
 
@@ -184,10 +166,6 @@ class NativeBmwDspResponseView @JvmOverloads constructor(
     private fun resolveColor(attribute: Int): Int {
         val typedValue = android.util.TypedValue()
         context.theme.resolveAttribute(attribute, typedValue, true)
-        return if (typedValue.resourceId != 0) {
-            ContextCompat.getColor(context, typedValue.resourceId)
-        } else {
-            typedValue.data
-        }
+        return if (typedValue.resourceId != 0) ContextCompat.getColor(context, typedValue.resourceId) else typedValue.data
     }
 }
