@@ -1,6 +1,7 @@
 package app.siphondsp.activity
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowCompat
 import app.siphondsp.BuildConfig
 import app.siphondsp.R
@@ -25,6 +26,14 @@ class OnboardingActivity : BaseActivity(){
         } else {
             OnboardingFragment.newInstance()
         }
+
+        // Handle both the back button and the Android 13+ back gesture;
+        // OnBackPressedDispatcher is the only route that receives gestures.
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateUp()
+            }
+        })
 
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,10 +67,6 @@ class OnboardingActivity : BaseActivity(){
         if(finished)
             finish()
         return finished
-    }
-
-    override fun onBackPressed() {
-        navigateUp()
     }
 
     override fun onSupportNavigateUp(): Boolean

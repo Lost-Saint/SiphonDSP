@@ -1,5 +1,6 @@
 package app.siphondsp.service
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -77,6 +78,7 @@ class QuickTileService : TileService(),
     }
 
     // Called when the user taps on your tile in an active or inactive state.
+    @SuppressLint("StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
 
@@ -89,6 +91,8 @@ class QuickTileService : TileService(),
                 if(SdkCheck.isUpsideDownCake)
                     startActivityAndCollapse(pending)
                 else
+                    // ponytail: PendingIntent overload is API 31+; Intent version is
+                    // the fallback for older devices, hence the suppression above.
                     startActivityAndCollapse(intent)
             }
             else
