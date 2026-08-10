@@ -202,8 +202,8 @@ dependencies {
     // AndroidX
     implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.2")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
@@ -218,10 +218,10 @@ dependencies {
 
     // Dependency injection
     implementation("io.insert-koin:koin-android:4.2.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
 
     // Firebase
-    "fullImplementation"(platform("com.google.firebase:firebase-bom:34.15.0"))
+    "fullImplementation"(platform("com.google.firebase:firebase-bom:34.17.0"))
     "fullImplementation"("com.google.firebase:firebase-analytics")
     "fullImplementation"("com.google.firebase:firebase-crashlytics")
     "fullImplementation"("com.google.firebase:firebase-crashlytics-ndk")
@@ -238,7 +238,7 @@ dependencies {
 
     // IO
     implementation("org.kamranzafar:jtar:2.3")
-    implementation("com.squareup.okio:okio:3.17.0")
+    implementation("com.squareup.okio:okio:3.18.1")
 
     // Room databases
     val roomVersion = "2.8.4"
