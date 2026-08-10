@@ -746,7 +746,9 @@ class MainActivity : BaseActivity() {
                                 }
                             }
                             catch (ex: Exception) {
-                                showAlert(getString(R.string.filelibrary_corrupted_title), ex.localizedMessage ?: "")
+                                withContext(Dispatchers.Main) {
+                                    showAlert(getString(R.string.filelibrary_corrupted_title), ex.localizedMessage ?: "")
+                                }
                             }
                         }
                         else if (namespace != null && key != null && keyEnable != null)
@@ -760,7 +762,9 @@ class MainActivity : BaseActivity() {
                         delay(250L)
                         broadcastPresetLoadEvent()
 
-                        makeSnackbar(getString(R.string.intent_import_select_success, name)).show()
+                        withContext(Dispatchers.Main) {
+                            makeSnackbar(getString(R.string.intent_import_select_success, name)).show()
+                        }
                     }
                 }
             }

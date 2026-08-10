@@ -54,8 +54,11 @@ class MutedAudioEffectFactory {
                         Int.MAX_VALUE,
                         sid)
                     ) {
-                        setParameter(VolumeParams.MUTE.ordinal, 1)
-                        setParameter(VolumeParams.LEVEL.ordinal, -96)
+                        // The volume effect implements the OpenSL ES SLVolumeItf interface,
+                        // whose parameter IDs are 2..6 (see VolumeParams) and levels are
+                        // expressed in millibels (SLmillibel; -9600 mB = -96 dB = mute)
+                        setParameter(VolumeParams.MUTE.param, 1)
+                        setParameter(VolumeParams.LEVEL.param, -9600)
                         Refine.unsafeCast(this)
                     }
                 }
@@ -131,12 +134,12 @@ class MutedAudioEffectFactory {
             Volume
         }
 
-        enum class VolumeParams {
-            LEVEL,                 // type SLmillibel = typedef SLuint16 (set & get)
-            MAXLEVEL,              // type SLmillibel = typedef SLuint16 (get)
-            MUTE,                  // type SLboolean  = typedef SLuint32 (set & get)
-            ENABLESTEREOPOSITION,  // type SLboolean  = typedef SLuint32 (set & get)
-            STEREOPOSITION,        // type SLpermille = typedef SLuint16 (set & get)
+        enum class VolumeParams(val param: Int) {
+            LEVEL(2),                // type SLmillibel = typedef SLuint16 (set & get)
+            MAXLEVEL(3),             // type SLmillibel = typedef SLuint16 (get)
+            MUTE(4),                 // type SLboolean  = typedef SLuint32 (set & get)
+            ENABLESTEREOPOSITION(5), // type SLboolean  = typedef SLuint32 (set & get)
+            STEREOPOSITION(6),       // type SLpermille = typedef SLuint16 (set & get)
         }
 
         private val volumeHiddenTypeUuid = UUID.fromString("09e8ede0-ddde-11db-b4f6-0002a5d5c51b")

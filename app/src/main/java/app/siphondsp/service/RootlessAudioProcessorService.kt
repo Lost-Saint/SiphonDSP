@@ -78,6 +78,8 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     // Processing
     private var recreateRecorderRequested = false
     private var recorderThread: Thread? = null
+    private lateinit var recorder: AudioRecord
+    private lateinit var track: AudioTrack
     private lateinit var engine: JamesDspLocalEngine
     private val isRunning: Boolean
         get() = recorderThread != null
@@ -221,8 +223,10 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
         isServiceDisposing = true
 
         // Stop recording and release engine
-        stopRecording()
-        engine.close()
+        if(stopRecording())
+            engine.close()
+        else
+            Timber.w("onDestroy: recorder thread still alive, skipping engine close")
 
         // Stop foreground service
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -411,6 +415,11 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     // Start recording thread
     @SuppressLint("BinaryOperationInTimber")
     private fun startRecording() {
+        if(recorderThread != null) {
+            Timber.w("startRecording: recorder thread still running, skipping")
+            return
+        }
+
         // Sanity check
         if (!hasRecordPermission()) {
             Timber.e("Record audio permission missing. Can't record")
@@ -438,8 +447,6 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
                 "HAL buffer size (bytes): ${determineBufferSize()}")
 
         // Create recorder and track
-        var recorder: AudioRecord
-        val track: AudioTrack
         try {
             recorder = buildAudioRecord(encodingFormat, sampleRate, bufferSizeBytes)
             track = buildAudioTrack(encodingFormat, sampleRate, bufferSizeBytes)
@@ -550,14 +557,25 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
         recorderThread!!.start()
     }
 
-    // Terminate recording thread
-    fun stopRecording() {
-        if (recorderThread != null) {
-            isProcessorDisposing = true
-            recorderThread!!.interrupt()
-            recorderThread!!.join(500)
+    // Terminate recording thread; returns whether the thread actually exited.
+    fun stopRecording(): Boolean {
+        val thread = recorderThread ?: return true
+        isProcessorDisposing = true
+
+        // interrupt() cannot break blocking AudioRecord.read()/AudioTrack.write();
+        // stop the devices so the blocking calls return and the loop exits.
+        // ponytail: runCatching swallows races with the thread's own stop/release.
+        if(::recorder.isInitialized) runCatching { recorder.stop() }
+        if(::track.isInitialized) runCatching { track.stop() }
+
+        thread.interrupt()
+        if(thread.isAlive)
+            thread.join(5_000)
+        // Keep the reference if the thread survived the budget, so startRecording's
+        // guard can never race a second thread beside a live one.
+        if(!thread.isAlive)
             recorderThread = null
-        }
+        return !thread.isAlive
     }
 
     // Hard restart recording thread

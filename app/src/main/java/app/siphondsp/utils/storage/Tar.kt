@@ -124,13 +124,17 @@ object Tar {
             val metadataBytes = ByteArrayOutputStream()
             try {
                 process { stream, name ->
+                    val destination = resolveDestination(targetFolder, name)
+                    if(destination == null) {
+                        Timber.w("Entry name rejected (unsafe path): $name")
+                        return@process
+                    }
+
                     var count: Int
                     val data = ByteArray(2048)
                     // create subdirectories in archive entry name
-                    File(targetFolder.absolutePath + "/" + name).parentFile?.mkdirs()
-                    BufferedOutputStream(FileOutputStream(
-                        targetFolder.absolutePath + "/" + name
-                    )).use { dest ->
+                    destination.parentFile?.mkdirs()
+                    BufferedOutputStream(FileOutputStream(destination)).use { dest ->
                         while (stream.read(data).also { count = it } != -1) {
                             if (name == FILE_METADATA)
                                 metadataBytes.write(data, 0, count)
@@ -162,6 +166,25 @@ object Tar {
                     this[args[0]] = args[1].trim()
                 }
             }
+        }
+
+        /**
+         * Resolve an archive entry name to a file inside [targetFolder].
+         * Rejects absolute paths and parent-directory traversal entries.
+         */
+        private fun resolveDestination(targetFolder: File, name: String): File? {
+            val relativePath = name.replace('\\', '/').trimStart('/')
+            if(relativePath.isEmpty() || relativePath.split('/').any { it == ".." })
+                return null
+
+            val destination = File(targetFolder, relativePath)
+
+            // Defense in depth: ensure the resolved path stays inside the target folder
+            val targetPath = targetFolder.canonicalPath
+            if(!destination.canonicalPath.startsWith(targetPath + File.separator))
+                return null
+
+            return destination
         }
     }
 

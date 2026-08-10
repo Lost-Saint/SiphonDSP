@@ -446,8 +446,9 @@ class OnboardingFragment : Fragment() {
 
     private fun areAdbPermissionsGranted(): Boolean {
         return requireContext().hasDumpPermission() &&
-                // Android 15+ doesn't allow keyguard recording without PROJECT_MEDIA
-                requireContext().hasProjectMediaAppOp()
+                // PROJECT_MEDIA only exists on Android 15+; keyguard recording without it
+                // is only restricted there. On older versions it can never be granted.
+                (!SdkCheck.isVanillaIceCream || requireContext().hasProjectMediaAppOp())
     }
 
     private fun requestNextPage(nextPage: Int, forward: Boolean): Int
