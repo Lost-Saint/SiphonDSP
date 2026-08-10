@@ -23,12 +23,10 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.graphics.alpha
@@ -277,12 +275,11 @@ object ContextExtensions {
 
         content.textInputLayout.suffixText = suffix
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setView(content.root)
-            .setPositiveButton(android.R.string.ok) { inputDialog, _ ->
-                val input = (inputDialog as AlertDialog).findViewById<TextView>(android.R.id.text1)
-                callback.invoke(input?.text?.toString())
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                callback.invoke(content.text1.text.toString())
             }
             .setNegativeButton(android.R.string.cancel) { _, _ ->
                 callback.invoke(null)

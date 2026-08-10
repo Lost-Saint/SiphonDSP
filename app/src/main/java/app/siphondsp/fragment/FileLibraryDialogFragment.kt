@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
@@ -74,7 +75,7 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
 
             dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
                 if(fileLibPreference.isPreset()) {
-                    val popupMenu = PopupMenu(requireContext(), it)
+                    val popupMenu = PopupMenu(ContextThemeWrapper(requireContext(), R.style.ThemeOverlay_SiphonDSP_PopupMenu), it)
                     popupMenu.menuInflater.inflate(R.menu.menu_filelibrary_add_context, popupMenu.menu)
 
                     popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -116,7 +117,7 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
             val name = item.name
             val path = FileLibraryPreference.createFullPathCompat(requireContext(), item.value.toString())
 
-            val popupMenu = PopupMenu(requireContext(), view)
+            val popupMenu = PopupMenu(ContextThemeWrapper(requireContext(), R.style.ThemeOverlay_SiphonDSP_PopupMenu), view)
             popupMenu.menuInflater.inflate(R.menu.menu_filelibrary_context, popupMenu.menu)
             popupMenu.menu.findItem(R.id.duplicate_selection).isVisible =
                 fileLibPreference.isLiveprog() || fileLibPreference.isPreset()

@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.PopupMenu
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceViewHolder
@@ -51,7 +52,7 @@ open class DropDownPreference(
     }
 
     private fun createMenu() {
-        mPopup = mRoot?.let { PopupMenu(mContext, it) }
+        mPopup = mRoot?.let { PopupMenu(ContextThemeWrapper(mContext, R.style.ThemeOverlay_SiphonDSP_PopupMenu), it) }
 
         entries.forEachIndexed { index, s ->
             mPopup?.menu?.add(Menu.NONE, index, Menu.CATEGORY_CONTAINER, s)

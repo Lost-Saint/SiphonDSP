@@ -55,6 +55,10 @@
 
     <style name="ThemeOverlay.SiphonDSP.Amoled" parent="" />
 
+    <style name="ThemeOverlay.SiphonDSP.PopupMenu" parent="ThemeOverlay.Material3">
+        <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
+    </style>
+
     <style name="AppTheme.AlertDialogTheme" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="dialogCornerRadius">28dp</item>
         <item name="colorBackgroundFloating">?attr/colorSurface</item>

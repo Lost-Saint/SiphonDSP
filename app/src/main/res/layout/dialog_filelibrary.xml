@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--suppress AndroidUnresolvableTag -->
-<androidx.appcompat.widget.AlertDialogLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parentPanel"
@@ -8,11 +7,31 @@
     android:layout_height="wrap_content"
     android:gravity="start|top"
     android:orientation="vertical">
-    <include layout="@layout/abc_alert_dialog_title_material"/>
+
+    <LinearLayout
+        android:id="@+id/topPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|start"
+        android:paddingHorizontal="?attr/dialogPreferredPadding"
+        android:paddingTop="?attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/alertTitle"
+            style="?android:attr/windowTitleStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textColor="?attr/colorOnSurface"/>
+    </LinearLayout>
 
     <TextView android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/abc_dialog_padding_material"
+        android:paddingHorizontal="?attr/dialogPreferredPadding"
         android:paddingTop="0dp"
         android:text="@string/filelibrary_hint_tap_and_hold"/>
 
@@ -50,11 +69,12 @@
                 <android.widget.Space
                     android:id="@+id/textSpacerNoTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/abc_dialog_padding_top_material"
+                    android:layout_height="?attr/dialogPreferredPadding"
                     android:visibility="gone"/>
                 <TextView
                     android:id="@android:id/message"
-                    style="@style/TextAppearance.AppCompat.Subhead"
+                    style="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="?attr/dialogPreferredPadding"
@@ -62,7 +82,7 @@
                 <android.widget.Space
                     android:id="@+id/textSpacerNoButtons"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/abc_dialog_padding_top_material"
+                    android:layout_height="?attr/dialogPreferredPadding"
                     android:visibility="gone"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
@@ -80,4 +100,4 @@
     <include layout="@layout/abc_alert_dialog_button_bar_material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-</androidx.appcompat.widget.AlertDialogLayout>
+</LinearLayout>
