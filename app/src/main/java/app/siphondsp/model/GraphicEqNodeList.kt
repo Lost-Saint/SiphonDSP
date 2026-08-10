@@ -19,8 +19,8 @@ class GraphicEqNodeList : ObservableArrayList<GraphicEqNode>() {
 
     fun serialize(): String {
         var str = "GraphicEQ: "
-        for (i in 0 until this.size) {
-            str += "${dfFreq.format(this[i].freq)} ${dfGain.format(this[i].gain)}; "
+        for (node in this) {
+            str += "${dfFreq.format(node.freq)} ${dfGain.format(node.gain)}; "
         }
 
         return str

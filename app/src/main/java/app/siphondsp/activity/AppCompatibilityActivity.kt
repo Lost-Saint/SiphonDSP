@@ -6,7 +6,7 @@ import android.os.Bundle
 import app.siphondsp.R
 import app.siphondsp.databinding.ActivityAppCompatibilityBinding
 import app.siphondsp.fragment.AppCompatibilityFragment
-import app.siphondsp.service.RootlessAudioProcessorService
+import app.siphondsp.service.BaseAudioProcessorService
 import app.siphondsp.utils.extensions.CompatExtensions.getParcelableAs
 
 class AppCompatibilityActivity : BaseActivity() {
@@ -20,9 +20,9 @@ class AppCompatibilityActivity : BaseActivity() {
         setSupportActionBar(binding.toolbar)
 
         if (savedInstanceState == null) {
-            val uid = intent.extras?.getInt(RootlessAudioProcessorService.EXTRA_APP_UID, -1) ?: -1
-            val internalCall = intent.extras?.getBoolean(RootlessAudioProcessorService.EXTRA_APP_COMPAT_INTERNAL_CALL, false) ?: false
-            val projectIntent = intent.extras?.getParcelableAs<Intent>(RootlessAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA)
+            val uid = intent.extras?.getInt(BaseAudioProcessorService.EXTRA_APP_UID, -1) ?: -1
+            val internalCall = intent.extras?.getBoolean(BaseAudioProcessorService.EXTRA_APP_COMPAT_INTERNAL_CALL, false) ?: false
+            val projectIntent = intent.extras?.getParcelableAs<Intent>(BaseAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA)
             if(uid < 0) {
                 finish()
                 return

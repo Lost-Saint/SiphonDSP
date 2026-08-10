@@ -12,7 +12,6 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.withStyledAttributes
-import androidx.core.os.bundleOf
 import app.siphondsp.utils.extensions.CompatExtensions.getParcelableAs
 import app.siphondsp.utils.extensions.prettyNumberFormat
 import timber.log.Timber
@@ -106,7 +105,10 @@ abstract class BaseEqualizerSurface(
     }
 
     override fun onSaveInstanceState() =
-        bundleOf("super" to super.onSaveInstanceState(), "levels" to mLevels)
+        Bundle().apply {
+            putParcelable("super", super.onSaveInstanceState())
+            putDoubleArray("levels", mLevels)
+        }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState((state as Bundle).getParcelableAs("super"))

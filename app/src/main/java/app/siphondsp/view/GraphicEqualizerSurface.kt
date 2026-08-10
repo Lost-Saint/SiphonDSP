@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.withStyledAttributes
-import androidx.core.os.bundleOf
 import app.siphondsp.model.GraphicEqNodeList
 import app.siphondsp.utils.extensions.CompatExtensions.getParcelableAs
 import app.siphondsp.utils.extensions.prettyNumberFormat
@@ -88,7 +87,11 @@ class GraphicEqualizerSurface(context: Context?, attrs: AttributeSet?) : View(co
     }
 
     override fun onSaveInstanceState() =
-        bundleOf("super" to super.onSaveInstanceState(), STATE_GAIN to mGains, STATE_FREQ to mFreqs)
+        Bundle().apply {
+            putParcelable("super", super.onSaveInstanceState())
+            putDoubleArray(STATE_GAIN, mGains)
+            putDoubleArray(STATE_FREQ, mFreqs)
+        }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState((state as Bundle).getParcelableAs("super"))

@@ -102,7 +102,7 @@ class EelParser {
     }
 
     fun findAnnotationLine(name: String): Int {
-        val regex = """(?:^|(?<=\n))(?:\s*)(\@[^\s\W]*)""".toRegex()
+        val regex = """(?:^|(?<=\n))\s*(@[^\s\W]*)""".toRegex()
         var count = 0
         contents?.lines()?.forEach { line ->
             count++
@@ -187,7 +187,7 @@ class EelParser {
         if(path == null)
             return
 
-        val descRegex = """(?:^|(?<=\n))(?:desc:)([\s\S][^\n]*)""".toRegex()
+        val descRegex = """(?:^|(?<=\n))desc:([\s\S][^\n]*)""".toRegex()
         val match = descRegex.find(contents ?: "")
         val desc = match?.groups?.get(1)?.value?.trim()
         hasDescription = desc != null
@@ -202,7 +202,7 @@ class EelParser {
         if(path == null)
             return
 
-        val tagRegex = """(?:^|(?<=\n))(?:[\W\/]*tags:)([\s\S][^\n]*)""".toRegex()
+        val tagRegex = """(?:^|(?<=\n))[\W/]*tags:([\s\S][^\n]*)""".toRegex()
         val match = tagRegex.find(contents ?: "")
 
         tags = match?.groups?.get(1)?.value?.trim()?.split(" ")?.map(String::trim) ?: listOf()

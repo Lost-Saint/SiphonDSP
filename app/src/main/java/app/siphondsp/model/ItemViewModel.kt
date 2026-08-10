@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 
 class ItemViewModel<T> : ViewModel() {
     private val mutableSelectedItem = MutableLiveData<T>()
-    val selectedItem: LiveData<T> get() = mutableSelectedItem
+    val selectedItem: LiveData<T> by this::mutableSelectedItem
 
     fun selectItem(item: T) {
         mutableSelectedItem.value = item!!

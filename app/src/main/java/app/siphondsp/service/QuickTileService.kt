@@ -84,7 +84,7 @@ class QuickTileService : TileService(),
 
         val toggled = qsTile?.let { it.state != Tile.STATE_ACTIVE } ?: return
         toggleEnginePower(toggled) { intent ->
-            val pending = PendingIntent.getActivity(app, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            val pending = PendingIntent.getActivity(app, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
             // If projection permission request needs to be shown, collapse status bar
             if (isRootless() && app.mediaProjectionStartIntent == null && !hasProjectMediaAppOp() && !SdkCheck.isVanillaIceCream) {

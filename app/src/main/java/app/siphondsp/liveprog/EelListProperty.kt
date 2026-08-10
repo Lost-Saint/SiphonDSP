@@ -52,7 +52,7 @@ class EelListProperty(
         }
 
         override val definitionRegex =
-            """(?<var>\w+):(?<def>-?\d+\.?\d*)?<(?<min>-?\d+\.?\d*),(?<max>-?\d+\.?\d*),?(?<step>-?\d+\.?\d*)?\{(?<opt>[^\}]*)\}>(?<desc>[\s\S][^\n]*)""".toRegex()
+            """(?<var>\w+):(?<def>-?\d+\.?\d*)?<(?<min>-?\d+\.?\d*),(?<max>-?\d+\.?\d*),?(?<step>-?\d+\.?\d*)?\{(?<opt>[^}]*)\}>(?<desc>[\s\S][^\n]*)""".toRegex()
 
         @Suppress("UNUSED_VARIABLE")
         override fun parse(line: String, contents: String): EelBaseProperty? {

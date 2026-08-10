@@ -18,6 +18,7 @@ import app.siphondsp.activity.AppCompatibilityActivity
 import app.siphondsp.activity.EngineLauncherActivity
 import app.siphondsp.activity.MainActivity
 import app.siphondsp.model.IEffectSession
+import app.siphondsp.service.BaseAudioProcessorService
 import app.siphondsp.service.RootlessAudioProcessorService
 import app.siphondsp.utils.SdkCheck
 import app.siphondsp.utils.extensions.ContextExtensions.getAppName
@@ -246,9 +247,9 @@ object ServiceNotificationHelper: KoinComponent {
     ): Intent {
         return Intent(ctx, AppCompatibilityActivity::class.java).apply {
             action = RootlessAudioProcessorService.ACTION_START
-            putExtra(RootlessAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA, mediaProjectionData)
-            putExtra(RootlessAudioProcessorService.EXTRA_APP_UID, appUid)
-            putExtra(RootlessAudioProcessorService.EXTRA_APP_COMPAT_INTERNAL_CALL, directLaunch)
+            putExtra(BaseAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA, mediaProjectionData)
+            putExtra(BaseAudioProcessorService.EXTRA_APP_UID, appUid)
+            putExtra(BaseAudioProcessorService.EXTRA_APP_COMPAT_INTERNAL_CALL, directLaunch)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
                     or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -269,7 +270,7 @@ object ServiceNotificationHelper: KoinComponent {
         if (SdkCheck.isQ && isRootless()) {
             with(Intent(ctx, RootlessAudioProcessorService::class.java)) {
                 action = RootlessAudioProcessorService.ACTION_START
-                putExtra(RootlessAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA, mediaProjectionData)
+                putExtra(BaseAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA, mediaProjectionData)
                 this
             }
         }

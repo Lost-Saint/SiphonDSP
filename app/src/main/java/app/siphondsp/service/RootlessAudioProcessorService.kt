@@ -87,6 +87,8 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     // Session management
     private lateinit var sessionManager: RootlessSessionManager
     private var sessionLossRetryCount = 0
+    @Volatile
+    private var notificationSessions: Array<IEffectSession> = emptyArray()
 
     // Idle detection
     private var isProcessorIdle = false
@@ -191,7 +193,7 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
         notificationManager.cancel(Notifications.ID_SERVICE_APPCOMPAT)
 
         // Setup media projection
-        mediaProjectionStartIntent = intent.extras?.getParcelableAs(EXTRA_MEDIA_PROJECTION_DATA)
+        mediaProjectionStartIntent = intent.extras?.getParcelableAs(BaseAudioProcessorService.EXTRA_MEDIA_PROJECTION_DATA)
 
         mediaProjection = try {
             mediaProjectionManager.getMediaProjection(
@@ -328,12 +330,14 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     // Session change listener
     private val onSessionChangeListener = object : OnRootlessSessionChangeListener {
         override fun onSessionChanged(sessionList: HashMap<Int, IEffectSession>) {
-            isProcessorIdle = sessionList.size == 0
+            isProcessorIdle = sessionList.isEmpty()
             Timber.d("onSessionChanged: isProcessorIdle=$isProcessorIdle")
+
+            notificationSessions = sessionList.values.toTypedArray()
 
             ServiceNotificationHelper.pushServiceNotification(
                 this@RootlessAudioProcessorService,
-                sessionList.map { it.value }.toTypedArray()
+                notificationSessions
             )
         }
     }
@@ -466,7 +470,12 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
         // TODO Move all audio-related code to C++
         recorderThread = Thread {
             try {
-                ServiceNotificationHelper.pushServiceNotification(applicationContext, arrayOf())
+                // Rebuilding the processing pipeline must not overwrite the current
+                // session-aware notification with a false "idle" state.
+                ServiceNotificationHelper.pushServiceNotification(
+                    applicationContext,
+                    notificationSessions,
+                )
 
                 val floatBuffer = FloatArray(bufferSize)
                 val floatOutBuffer = FloatArray(bufferSize)
@@ -689,11 +698,9 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     companion object {
         const val SESSION_LOSS_MAX_RETRIES = 1
 
-        const val ACTION_START = BuildConfig.APPLICATION_ID + ".rootless.service.START"
-        const val ACTION_STOP = BuildConfig.APPLICATION_ID + ".rootless.service.STOP"
-        const val EXTRA_MEDIA_PROJECTION_DATA = "mediaProjectionData"
-        const val EXTRA_APP_UID = "uid"
-        const val EXTRA_APP_COMPAT_INTERNAL_CALL = "appCompatInternalCall"
+        const val ACTION_START: String = BuildConfig.APPLICATION_ID + ".rootless.service.START"
+
+        const val ACTION_STOP: String = BuildConfig.APPLICATION_ID + ".rootless.service.STOP"
 
         fun start(context: Context, data: Intent?) {
             try {

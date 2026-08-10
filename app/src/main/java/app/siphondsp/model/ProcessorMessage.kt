@@ -10,7 +10,7 @@ package app.siphondsp.model
          ConvolverParseError(5);
 
          companion object {
-             fun fromInt(value: Int) = values().first { it.value == value }
+             fun fromInt(value: Int) = entries.first { it.value == value }
          }
      }
 
@@ -23,7 +23,7 @@ package app.siphondsp.model
          ConvolverErrorCode(5);
 
          companion object {
-             fun fromInt(value: Int) = values().first { it.value == value }
+             fun fromInt(value: Int) = entries.first { it.value == value }
          }
      }
 
@@ -34,7 +34,7 @@ package app.siphondsp.model
          AdvParamsInvalid(3);
 
          companion object {
-             fun fromInt(value: Int) = values().first { it.value == value }
+             fun fromInt(value: Int) = entries.first { it.value == value }
          }
      }
 

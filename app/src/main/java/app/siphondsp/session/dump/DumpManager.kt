@@ -22,7 +22,7 @@ class DumpManager constructor(val context: Context): KoinComponent {
         AudioFlingerService(2); /* Only used for debugging */
 
         companion object {
-            fun fromInt(value: Int) = values().first { it.value == value }
+            fun fromInt(value: Int) = entries.first { it.value == value }
         }
     }
 

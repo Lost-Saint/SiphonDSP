@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.withStyledAttributes
-import androidx.core.os.bundleOf
 import app.siphondsp.model.ParametricEqBandList
 import app.siphondsp.utils.BiquadUtils
 import app.siphondsp.utils.extensions.CompatExtensions.getParcelableAs
@@ -69,12 +68,12 @@ class ParametricEqSurface(context: Context?, attrs: AttributeSet?) : View(contex
     }
 
     override fun onSaveInstanceState() =
-        bundleOf(
-            "super" to super.onSaveInstanceState(),
-            STATE_FREQ to mCurveFreqs,
-            STATE_GAIN to mCurveGains,
-            STATE_PREAMP to mPreampDb
-        )
+        Bundle().apply {
+            putParcelable("super", super.onSaveInstanceState())
+            putDoubleArray(STATE_FREQ, mCurveFreqs)
+            putDoubleArray(STATE_GAIN, mCurveGains)
+            putDouble(STATE_PREAMP, mPreampDb)
+        }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState((state as Bundle).getParcelableAs("super"))

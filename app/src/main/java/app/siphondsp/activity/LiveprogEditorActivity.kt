@@ -22,7 +22,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.amrdeveloper.codeview.CodeView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import app.siphondsp.BuildConfig
 import app.siphondsp.R
 import app.siphondsp.adapter.CustomCodeViewAdapter
 import app.siphondsp.databinding.ActivityLiveprogEditorBinding
@@ -45,7 +44,6 @@ import app.siphondsp.utils.extensions.ContextExtensions.showYesNoAlert
 import app.siphondsp.utils.extensions.ContextExtensions.toast
 import app.siphondsp.utils.extensions.ContextExtensions.unregisterLocalReceiver
 import app.siphondsp.utils.isPlugin
-import app.siphondsp.utils.isRoot
 import app.siphondsp.utils.isRootless
 import timber.log.Timber
 import java.util.Locale
@@ -235,7 +233,7 @@ class LiveprogEditorActivity : BaseActivity() {
         path ?: return
 
         @Suppress("DEPRECATION")
-        val liveprog = getSharedPreferences(Constants.PREF_LIVEPROG, Context.MODE_MULTI_PROCESS)
+        val liveprog = getSharedPreferences(Constants.PREF_LIVEPROG, MODE_MULTI_PROCESS)
         var key = getString(R.string.key_liveprog_enable)
         // Make sure liveprog is enabled
         if(!liveprog.getBoolean(key, false)) {

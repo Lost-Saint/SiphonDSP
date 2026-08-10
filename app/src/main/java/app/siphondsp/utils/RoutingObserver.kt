@@ -53,8 +53,8 @@ class RoutingObserver(val context: Context) : MediaRouter.Callback(), KoinCompon
                 }
             }?.let { device ->
                 Device(
-                    device.productName.toString(),
-                    device.address,
+                    sdkAbove(Build.VERSION_CODES.P) { device.productName.toString() }.below { "" },
+                    sdkAbove(Build.VERSION_CODES.P) { device.address }.below { "" },
                     device.deviceGroup
                 )
             }

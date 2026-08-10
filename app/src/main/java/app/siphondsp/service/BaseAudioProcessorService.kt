@@ -30,5 +30,8 @@ abstract class BaseAudioProcessorService : Service() {
     companion object {
         var activeServices: Int = 0
             private set
+        const val EXTRA_MEDIA_PROJECTION_DATA = "mediaProjectionData"
+        const val EXTRA_APP_UID = "uid"
+        const val EXTRA_APP_COMPAT_INTERNAL_CALL = "appCompatInternalCall"
     }
 }

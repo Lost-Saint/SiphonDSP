@@ -3,12 +3,10 @@ package app.siphondsp.activity
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowCompat
-import app.siphondsp.BuildConfig
 import app.siphondsp.R
 import app.siphondsp.databinding.ActivityOnboardingBinding
 import app.siphondsp.fragment.OnboardingFragment
 import app.siphondsp.utils.extensions.ContextExtensions.showAlert
-import app.siphondsp.utils.isRoot
 import app.siphondsp.utils.isRootless
 
 
