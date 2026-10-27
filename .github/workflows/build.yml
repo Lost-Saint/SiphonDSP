@@ -162,6 +162,7 @@ jobs:
           name: SiphonDSP ${{ github.ref_name }}
           draft: false
           prerelease: false
+          generate_release_notes: true
           files: release-apks/*.apk
 
       - name: Verify uploaded APK assets
