@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Generate Crowdin Contributors data
-      uses: andrii-bodnar/action-crowdin-contributors@v1.0.1
+      uses: andrii-bodnar/action-crowdin-contributors@ef1aebb96d8a0e60faf8f85376f52f1898b66c83 # v3.3.1
       id: contributors
       with:
         contributors_per_line: 6
@@ -33,14 +33,14 @@ jobs:
         CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
         
     - name: Create translator info json
-      uses: DamianReeves/write-file-action@v1.2
+      uses: DamianReeves/write-file-action@6929a9a6d1807689191dcc8bbe62b54d70a32b42 # v1.3
       with:
         path: app/src/main/res/raw/translators.json
         write-mode: overwrite
         contents: ${{ steps.contributors.outputs.json_report }}
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v6.1.0
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         title: Update Crowdin Contributors table
         body: By [action-crowdin-contributors](https://github.com/andrii-bodnar/action-crowdin-contributors) GitHub action

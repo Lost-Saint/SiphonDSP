@@ -1,7 +1,7 @@
 package app.siphondsp.flavor.updates.api
 
 import android.content.Context
-import com.pluto.plugins.network.okhttp.PlutoOkhttpInterceptor
+import com.pluto.plugins.network.interceptors.okhttp.PlutoOkhttpInterceptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

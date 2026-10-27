@@ -663,12 +663,14 @@ Java_app_siphondsp_interop_JamesDspWrapper_enumerateEelVariables(JNIEnv *env, jo
             if (ctx->varTable_Names[i][j])
             {
                 const char* name = ctx->varTable_Names[i][j];
-                const char* value;
+                std::string valueStorage;
+                const char* value = valid;
 
-                if(isString)
-                    value = valid;
-                else
-                    value = std::to_string(ctx->varTable_Values[i][j]).c_str();
+                if (!isString)
+                {
+                    valueStorage = std::to_string(ctx->varTable_Values[i][j]);
+                    value = valueStorage.c_str();
+                }
 
                 auto var = EelVmVariable(env, name, value, isString);
                 array.add(var.getJavaReference());

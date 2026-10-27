@@ -22,6 +22,7 @@ android {
 
     val SUPPORTED_ABIS = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
     compileSdk = AndroidConfig.compileSdk
+    ndkVersion = "30.0.16248370"
     project.extensions.configure<BasePluginExtension>("base") {
         archivesName.set("SiphonDSP-v${AndroidConfig.versionName}")
     }
@@ -175,7 +176,7 @@ android {
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
+            version = "4.1.2"
         }
     }
     namespace = "app.siphondsp"
@@ -197,20 +198,20 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${AndroidConfig.kotlinVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
 
     // AndroidX
-    implementation("androidx.core:core-ktx:1.19.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.core:core-ktx:1.19.1")
+    implementation("androidx.appcompat:appcompat:1.8.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.2")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.10.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.10.2")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.databinding:databinding-runtime:9.2.1")
+    implementation("androidx.databinding:databinding-runtime:9.4.1")
     implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
-    implementation("androidx.work:work-runtime-ktx:2.11.2")
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
     implementation("androidx.mediarouter:mediarouter:1.8.1")
 
     // Material
@@ -221,13 +222,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
 
     // Firebase
-    "fullImplementation"(platform("com.google.firebase:firebase-bom:34.17.0"))
+    "fullImplementation"(platform("com.google.firebase:firebase-bom:35.1.0"))
     "fullImplementation"("com.google.firebase:firebase-analytics")
     "fullImplementation"("com.google.firebase:firebase-crashlytics")
     "fullImplementation"("com.google.firebase:firebase-crashlytics-ndk")
 
     // Web API client
-    implementation("com.google.code.gson:gson:2.14.0")
+    implementation("com.google.code.gson:gson:2.15.0")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.squareup.retrofit2:converter-scalars:3.0.0")
@@ -238,10 +239,10 @@ dependencies {
 
     // IO
     implementation("org.kamranzafar:jtar:2.3")
-    implementation("com.squareup.okio:okio:3.18.1")
+    implementation("com.squareup.okio:okio:3.18.2")
 
     // Room databases
-    val roomVersion = "2.8.4"
+    val roomVersion = "2.8.5"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:${roomVersion}")
@@ -254,7 +255,7 @@ dependencies {
     implementation("dev.rikka.shizuku:provider:${AndroidConfig.shizukuVersion}")
 
     // Used for backup file access
-    implementation("com.github.tachiyomiorg:unifile:17bec43")
+    implementation("com.github.tachiyomiorg:unifile:a9de196cc7ec623d5641fbe0f768c082736ac84c")
 
     // Root APIs
     "rootImplementation"("com.github.topjohnwu.libsu:core:6.0.0")
@@ -267,15 +268,15 @@ dependencies {
 
     // Debug utilities
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
-    debugImplementation("com.plutolib:pluto:2.2.2")
-    "previewImplementation"("com.plutolib:pluto-no-op:2.2.2")
-    releaseImplementation("com.plutolib:pluto-no-op:2.2.2")
-    debugImplementation("com.plutolib.plugins:bundle-core:2.2.2")
-    "previewImplementation"("com.plutolib.plugins:bundle-core-no-op:2.2.2")
-    releaseImplementation("com.plutolib.plugins:bundle-core-no-op:2.2.2")
-    debugImplementation("com.plutolib.plugins:network-interceptor-okhttp:2.2.2")
-    "previewImplementation"("com.plutolib.plugins:network-interceptor-okhttp-no-op:2.2.2")
-    releaseImplementation("com.plutolib.plugins:network-interceptor-okhttp-no-op:2.2.2")
+    debugImplementation("com.androidpluto:pluto:3.0.1")
+    "previewImplementation"("com.androidpluto:pluto-no-op:3.0.1")
+    releaseImplementation("com.androidpluto:pluto-no-op:3.0.1")
+    debugImplementation("com.androidpluto.plugins:bundle-core:3.0.1")
+    "previewImplementation"("com.androidpluto.plugins:bundle-core-no-op:3.0.1")
+    releaseImplementation("com.androidpluto.plugins:bundle-core-no-op:3.0.1")
+    debugImplementation("com.androidpluto.plugins:network:3.0.1")
+    "previewImplementation"("com.androidpluto.plugins:network-no-op:3.0.1")
+    releaseImplementation("com.androidpluto.plugins:network-no-op:3.0.1")
 
     // Unit tests
     testImplementation("junit:junit:4.13.2")

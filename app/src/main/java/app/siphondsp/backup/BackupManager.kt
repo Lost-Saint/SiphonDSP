@@ -41,21 +41,22 @@ class BackupManager(private val context: Context): KoinComponent {
         var file: UniFile? = null
         try {
             file = (if (isAutoBackup) {
-                        // Get dir of file and create
-                        var dir = UniFile.fromUri(context, uri)
-                        dir = dir.createDirectory("automatic")
+                        val baseDirectory = UniFile.fromUri(context, uri)
+                            ?: throw IllegalStateException("Couldn't open backup directory")
+                        val directory = baseDirectory.createDirectory("automatic")
+                            ?: throw IllegalStateException("Couldn't create automatic backup directory")
 
                         // Delete older backups
                         val numberOfBackups = preferences.get<String>(R.string.key_backup_maximum).toIntOrNull() ?: 2
                         val backupRegex = Regex("""jamesdsp_backup_\d+-\d+-\d+_\d+-\d+.tar.gz""")
-                        dir.listFiles { _, filename -> backupRegex.matches(filename) }
+                        directory.listFiles { _, filename -> backupRegex.matches(filename) }
                             .orEmpty()
                             .sortedByDescending { it.name }
                             .drop(numberOfBackups - 1)
                             .forEach { it.delete() }
 
                         // Create new file to place backup
-                        dir.createFile(getBackupFilename())
+                        directory.createFile(getBackupFilename())
                     } else {
                         UniFile.fromUri(context, uri)
                     })

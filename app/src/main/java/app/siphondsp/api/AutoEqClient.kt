@@ -1,7 +1,7 @@
 package app.siphondsp.api
 
 import android.content.Context
-import com.pluto.plugins.network.okhttp.PlutoOkhttpInterceptor
+import com.pluto.plugins.network.interceptors.okhttp.PlutoOkhttpInterceptor
 import app.siphondsp.BuildConfig
 import app.siphondsp.R
 import app.siphondsp.flavor.CrashlyticsImpl

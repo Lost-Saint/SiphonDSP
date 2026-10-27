@@ -26,7 +26,7 @@ android {
 
 dependencies {
     // Kotlin
-    implementation("androidx.core:core-ktx:1.19.0")
+    implementation("androidx.core:core-ktx:1.19.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${AndroidConfig.kotlinVersion}")
 
     // Refine

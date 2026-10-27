@@ -143,7 +143,7 @@ class SettingsBackupFragment : SettingsBaseFragment() {
     fun updateSummaries() {
         val current = preferences.get<String>(R.string.key_backup_location)
         location?.summary = if(current.isBlank()) getString(R.string.value_not_set)
-            else UniFile.fromUri(context, current.toUri()).filePath + "/automatic"
+            else UniFile.fromUri(context, current.toUri())?.filePath?.let { "$it/automatic" } ?: current
     }
 
     companion object {
