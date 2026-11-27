@@ -8,7 +8,7 @@ object AndroidConfig {
     const val versionCode = 55
 
     const val kotlinVersion = "2.4.21"
-    const val kspVersion = "2.3.12"
+    const val kspVersion = "2.3.14"
     const val shizukuVersion = "13.1.5"
     const val rikkaRefineVersion = "4.4.0"
 }

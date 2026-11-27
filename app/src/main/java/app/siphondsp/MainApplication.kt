@@ -57,7 +57,7 @@ import java.util.Locale
 open class MainApplication : Application(), SharedPreferences.OnSharedPreferenceChangeListener {
     init {
         sdkAbove(Build.VERSION_CODES.P) {
-            HiddenApiBypass.addHiddenApiExemptions("L")
+            HiddenApiBypass.setHiddenApiExemptions("L")
         }
     }
 
