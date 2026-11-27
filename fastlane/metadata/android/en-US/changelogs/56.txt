@@ -1,0 +1,6 @@
+* Fixed a repeating noise and stuck engine when another app, such as a screen recorder, ended audio capture
+* Fixed old audio being replayed when capture failed
+* Fixed continuous session polling carrying on after the engine was turned off
+* Fixed turning the engine back on failing the first time on Android 14
+* Fixed session loss recovery not retrying after an earlier loss
+* Updated Android build tools and libraries
