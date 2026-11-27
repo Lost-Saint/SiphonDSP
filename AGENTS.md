@@ -2,7 +2,7 @@
 
 SiphonDSP is an Android app for system-wide JamesDSP audio processing without root.
 
-Android builds and dependency resolution use the Gradle Wrapper (`./gradlew`); Fastlane dependencies use Bundler (`bundle`).
+Android builds and dependency resolution use the Gradle Wrapper (`./gradlew`).
 
 ## Where code lives
 
