@@ -21,6 +21,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
+import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.core.math.MathUtils.clamp
@@ -76,6 +77,7 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     private var mediaProjectionStartIntent: Intent? = null
 
     // Processing
+    @Volatile
     private var recreateRecorderRequested = false
     private var recorderThread: Thread? = null
     private lateinit var recorder: AudioRecord
@@ -87,18 +89,23 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
     // Session management
     private lateinit var sessionManager: RootlessSessionManager
     private var sessionLossRetryCount = 0
+    private var lastSessionLossTime = 0L
     @Volatile
     private var notificationSessions: Array<IEffectSession> = emptyArray()
 
     // Idle detection
+    @Volatile
     private var isProcessorIdle = false
+    @Volatile
     private var suspendOnIdle = false
 
     // Exclude restricted apps flag
     private var excludeRestrictedSessions = false
 
     // Termination flags
+    @Volatile
     private var isProcessorDisposing = false
+    @Volatile
     private var isServiceDisposing = false
 
     // Shared preferences
@@ -269,16 +276,13 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
                 return
             }
 
-            if(preferencesVar.get<Boolean>(R.string.key_is_activity_active)) {
-                // Activity in foreground, toast too disruptive
-                return
-            }
-
             Timber.w("Capture permission revoked. Stopping service.")
 
             sendLocalBroadcast(Intent(Constants.ACTION_DISCARD_AUTHORIZATION))
 
-            this@RootlessAudioProcessorService.toast(getString(R.string.capture_permission_revoked_toast))
+            // Activity in foreground, toast too disruptive
+            if(!preferencesVar.get<Boolean>(R.string.key_is_activity_active))
+                this@RootlessAudioProcessorService.toast(getString(R.string.capture_permission_revoked_toast))
 
             notificationManager.cancel(Notifications.ID_SERVICE_STATUS)
             stopSelf()
@@ -303,6 +307,12 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
         override fun onSessionLost(sid: Int) {
             // Push notification if enabled
             if(!preferences.get<Boolean>(R.string.key_session_loss_ignore)) {
+                // A loss long after the previous one is a new problem, not a failed retry
+                val now = SystemClock.elapsedRealtime()
+                if(now - lastSessionLossTime > SESSION_LOSS_RETRY_WINDOW_MS)
+                    sessionLossRetryCount = 0
+                lastSessionLossTime = now
+
                 // Check if retry count exceeded
                 if(sessionLossRetryCount < SESSION_LOSS_MAX_RETRIES) {
                     // Retry
@@ -481,6 +491,7 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
                 val floatOutBuffer = FloatArray(bufferSize)
                 val shortBuffer = ShortArray(bufferSize)
                 val shortOutBuffer = ShortArray(bufferSize)
+                var readErrors = 0
                 while (!isProcessorDisposing) {
                     if(recreateRecorderRequested) {
                         recreateRecorderRequested = false
@@ -532,13 +543,37 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
                     }
 
                     // Choose encoding and process data
-                    if(encoding == AudioEncoding.PcmShort) {
+                    val read = if(encoding == AudioEncoding.PcmShort)
                         recorder.read(shortBuffer, 0, shortBuffer.size, AudioRecord.READ_BLOCKING)
+                    else
+                        recorder.read(floatBuffer, 0, floatBuffer.size, AudioRecord.READ_BLOCKING)
+
+                    if(read < 0) {
+                        // AudioRecord already retried internally; skip the write so the
+                        // previous buffer isn't played again.
+                        if(isProcessorDisposing)
+                            break
+                        readErrors++
+                        Timber.e("recorderThread: read failed with $read ($readErrors/$MAX_READ_ERRORS)")
+                        if(readErrors >= MAX_READ_ERRORS) {
+                            Timber.e("recorderThread: recorder keeps failing, stopping service")
+                            stopSelf()
+                            break
+                        }
+                        continue
+                    }
+                    readErrors = 0
+
+                    // A short read (e.g. while stopping) leaves old samples behind; silence them
+                    if(encoding == AudioEncoding.PcmShort) {
+                        if(read < shortBuffer.size)
+                            shortBuffer.fill(0, read, shortBuffer.size)
                         engine.processInt16(shortBuffer, shortOutBuffer)
                         track.write(shortOutBuffer, 0, shortOutBuffer.size, AudioTrack.WRITE_BLOCKING)
                     }
                     else {
-                        recorder.read(floatBuffer, 0, floatBuffer.size, AudioRecord.READ_BLOCKING)
+                        if(read < floatBuffer.size)
+                            floatBuffer.fill(0f, read, floatBuffer.size)
                         engine.processFloat(floatBuffer, floatOutBuffer)
                         track.write(floatOutBuffer, 0, floatOutBuffer.size, AudioTrack.WRITE_BLOCKING)
                     }
@@ -697,6 +732,8 @@ class RootlessAudioProcessorService : BaseAudioProcessorService() {
 
     companion object {
         const val SESSION_LOSS_MAX_RETRIES = 1
+        const val SESSION_LOSS_RETRY_WINDOW_MS = 60_000L
+        const val MAX_READ_ERRORS = 3
 
         const val ACTION_START: String = BuildConfig.APPLICATION_ID + ".rootless.service.START"
 

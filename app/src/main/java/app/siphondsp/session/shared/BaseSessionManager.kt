@@ -20,6 +20,8 @@ import androidx.core.content.getSystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -105,6 +107,10 @@ abstract class BaseSessionManager(protected val context: Context) : DumpManager.
     {
         Timber.d("Destroying SessionDumpManager")
 
+        continuousPollingJob?.cancel()
+        continuousPollingJob = null
+        pollingScope.cancel()
+        preferences.unregisterOnSharedPreferenceChangeListener(preferencesListener)
         dumpManager.unregisterOnDumpMethodChangeListener(this)
 
         audioPlaybackCallback?.let { audioManager.unregisterAudioPlaybackCallback(it) }
@@ -159,8 +165,9 @@ abstract class BaseSessionManager(protected val context: Context) : DumpManager.
     {
         when (sessionUpdateMode) {
             SessionUpdateMode.ContinuousPolling -> {
+                continuousPollingJob?.cancel()
                 continuousPollingJob = pollingScope.launch {
-                    while(continuousPollingJob != null && continuousPollingJob?.isCancelled == false)
+                    while(isActive)
                     {
                         pollSessionDump()
                         delay(pollingTimeout)

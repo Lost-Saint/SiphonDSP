@@ -613,7 +613,8 @@ class MainActivity : BaseActivity() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun requestCapturePermission() {
-        if(app.mediaProjectionStartIntent != null && isRootless() && !SdkCheck.isVanillaIceCream) {
+        // Note: Android >=14 doesn't allow token reuse
+        if(app.mediaProjectionStartIntent != null && isRootless() && !SdkCheck.isUpsideDownCake) {
             binding.powerToggle.isToggled = true
             RootlessAudioProcessorService.start(this, app.mediaProjectionStartIntent)
             return
