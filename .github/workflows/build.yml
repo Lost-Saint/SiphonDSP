@@ -63,6 +63,12 @@ jobs:
             echo "Release tag $GITHUB_REF_NAME does not match app version $EXPECTED_TAG."
             exit 1
           fi
+          APP_VERSION_CODE="$(sed -nE 's/^[[:space:]]*const val versionCode = ([0-9]+).*/\1/p' buildSrc/src/main/kotlin/AndroidConfig.kt)"
+          CHANGELOG="fastlane/metadata/android/en-US/changelogs/${APP_VERSION_CODE}.txt"
+          if [[ ! -s "$CHANGELOG" ]]; then
+            echo "Missing release changelog: $CHANGELOG"
+            exit 1
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
@@ -157,12 +163,23 @@ jobs:
             done
           done
 
+      - name: Write release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_VERSION_CODE="$(sed -nE 's/^[[:space:]]*const val versionCode = ([0-9]+).*/\1/p' buildSrc/src/main/kotlin/AndroidConfig.kt)"
+          {
+            printf "## What's changed\n\n"
+            cat "fastlane/metadata/android/en-US/changelogs/${APP_VERSION_CODE}.txt"
+          } > release-notes.md
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           name: SiphonDSP ${{ github.ref_name }}
           draft: false
           prerelease: false
+          body_path: release-notes.md
           generate_release_notes: true
           files: release-apks/*.apk
 
